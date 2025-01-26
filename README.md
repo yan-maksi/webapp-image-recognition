@@ -30,23 +30,28 @@ WebApp for Image Recognition - Draw shapes, take pictures, or upload images.
 ```
 ## Components
 
-### CanvasManager
-- Handles drawing functionality - Manages canvas state - Processes user input
-
-### CameraManager
-- Controls webcam access - Manages video stream - Handles image capture
-
-### ResultsManager
-- Displays recognition results - Generates bar charts - Provides voice feedback - Renders recognized shapes
-
-### App
-- Initializes components - Coordinates interactions - Manages ML model
-
 ## Technologies
 - TensorFlow.js - Canvas API - WebRTC - Speech Synthesis API
+
+### CanvasManager class
+- Handles drawing functionality - Manages canvas state - Processes user input
+
+### CameraManager class
+- Controls webcam access - Manages video stream - Handles image capture
+
+### ResultsManager class
+- Displays recognition results - Generates bar charts - Provides voice feedback - Renders recognized shapes
+
+### App class
+- Initializes components - Coordinates interactions - Manages ML model
 
 ## Setup
 
 1. Install dependencies
 2. Configure model paths in `config.js`
 3. Run on a web server
+
+## Dataset
+https://www.kaggle.com/datasets/dineshpiyasamara/geometric-shapes-dataset/data
+<img width="719" alt="Screenshot 2025-01-26 at 9 18 46 PM" src="https://github.com/user-attachments/assets/a0d15124-b65c-41a9-872d-e9352a58a2fd" />
+
