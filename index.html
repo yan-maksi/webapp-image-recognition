@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shape Recognition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.3/dist/teachablemachine-image.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="camera-section">
+            <h2>Camera Feed</h2>
+            <video id="webcam" autoplay playsinline></video>
+            <div class="button-group">
+                <button id="startCamera">Start Camera</button>
+                <button id="stopCamera" class="stop">Stop Camera</button>
+                <button id="capture">Capture</button>
+                <label class="upload-label">
+                    Upload Image
+                    <input type="file" id="fileUpload" accept="image/*">
+                </label>
+            </div>
+            <div id="result">Recognition Result: <span id="prediction"></span></div>
+            <div class="chart-container">
+                <h3>Shape Probabilities</h3>
+                <div id="barChart" class="bar-chart"></div>
+            </div>
+        </div>
+        <div class="drawing-section">
+            <h2>Drawing Canvas</h2>
+            <canvas id="canvas"></canvas>
+            <div class="button-group">
+                <button id="clear">Clear</button>
+                <button id="recognize">Recognize Shape</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js" defer></script>
+    <script src="CameraManager.js" defer></script>
+    <script src="CanvasManager.js" defer></script>
+    <script src="ResultsManager.js" defer></script>
+    <script src="script.js" defer></script>
+
+</body>
+</html>
