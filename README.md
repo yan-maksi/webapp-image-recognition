@@ -2,6 +2,8 @@
 
 WebApp for Image Recognition - Draw shapes, take pictures, or upload images.
 
+<img width="1245" alt="Screenshot 2025-01-26 at 9 12 53 PM" src="https://github.com/user-attachments/assets/d5fb22fe-c08b-4e36-8690-2fbf373bdc3a" />
+
 ## What can it do?
 
 - Draw shapes with your mouse
@@ -46,6 +48,3 @@ WebApp for Image Recognition - Draw shapes, take pictures, or upload images.
 1. Install dependencies
 2. Configure model paths in `config.js`
 3. Run on a web server
-
-<img width="1245" alt="Screenshot 2025-01-26 at 9 12 53 PM" src="https://github.com/user-attachments/assets/d5fb22fe-c08b-4e36-8690-2fbf373bdc3a" />
-
