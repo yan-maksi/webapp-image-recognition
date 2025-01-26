@@ -16,15 +16,17 @@ WebApp for Image Recognition - Draw shapes, take pictures, or upload images.
 ## Project Structure
 
 ```
-├── config.js           # Application configuration
+├── config.js
 ├── classes/
-│   ├── App.js         # Main application class
-│   ├── CanvasManager.js    # Canvas handling and drawing
-│   ├── CameraManager.js    # Webcam functionality
-│   └── ResultsManager.js   # Results display and visualization
-├── models/
-│   └── tm-my-image-model/  # TensorFlow model files
-└── index.html         # Main HTML file
+│   ├── App.js         
+│   ├── CanvasManager.js    
+│   ├── CameraManager.js   
+│   └── ResultsManager.js  
+├── tm-my-image-model/
+│   └── metadata.json
+│   └── model.json
+│   └── weights.bin
+└── index.html
 ```
 ## Components
 
