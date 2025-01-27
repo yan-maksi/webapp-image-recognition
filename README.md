@@ -52,6 +52,5 @@ WebApp for Image Recognition - Draw shapes, take pictures, or upload images.
 3. Run on a web server
 
 ## Dataset
-https://www.kaggle.com/datasets/dineshpiyasamara/geometric-shapes-dataset/data
-<img width="719" alt="Screenshot 2025-01-26 at 9 18 46 PM" src="https://github.com/user-attachments/assets/a0d15124-b65c-41a9-872d-e9352a58a2fd" />
-
+https://www.kaggle.com/datasets/reevald/geometric-shapes-mathematics
+![dataset-cover](https://github.com/user-attachments/assets/18741cd5-abda-4856-94f0-c11472791b4e)
