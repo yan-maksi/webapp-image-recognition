@@ -26,6 +26,7 @@ WebApp for Image Recognition - Draw shapes, take pictures, or upload images.
 │   └── metadata.json
 │   └── model.json
 │   └── weights.bin
+├── styles.css
 └── index.html
 ```
 ## Components
