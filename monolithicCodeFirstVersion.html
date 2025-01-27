@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shape Recognition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.3/dist/teachablemachine-image.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <style>
+        .code-section {
+            margin-top: 40px;
+            display: flex;
+            min-height: 500px;
+            border: 1px solid #1e1e1e;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .project-tree {
+            width: 25%;
+            background: #252526;
+            padding: 20px;
+            border-right: 1px solid #333;
+        }
+        
+        .code-viewer {
+            width: 75%;
+            background: #1e1e1e;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        
+        .file-item {
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #d4d4d4;
+        }
+        
+        .file-item:hover {
+            background: #37373d;
+        }
+        
+        .file-item.active {
+            background: #37373d;
+            color: #fff;
+        }
+        
+        .folder {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #d4d4d4;
+        }
+        
+        .file {
+            margin-left: 20px;
+        }
+
+        .code-section-header {
+            font-size: 24px;
+            margin-top: 40px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Syntax highlighting */
+        .code-viewer .keyword { color: #569cd6; }
+        .code-viewer .string { color: #ce9178; }
+        .code-viewer .comment { color: #6a9955; }
+        .code-viewer .function { color: #dcdcaa; }
+        .code-viewer .number { color: #b5cea8; }
+        .code-viewer .tag { color: #569cd6; }
+        .code-viewer .attribute { color: #9cdcfe; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .camera-section, .drawing-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        #webcam, #canvas {
+            width: 400px;
+            height: 300px;
+            border: 2px solid #333;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background-color: white;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button.stop {
+            background-color: #dc3545;
+        }
+        button.stop:hover {
+            background-color: #c82333;
+        }
+        #result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #e9ecef;
+            text-align: center;
+        }
+        #fileUpload {
+            display: none;
+        }
+        .upload-label {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .upload-label:hover {
+            background-color: #218838;
+        }
+        .chart-container {
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .bar-label {
+            width: 100px;
+            text-align: right;
+        }
+        .bar-outer {
+            flex-grow: 1;
+            background-color: #e9ecef;
+            height: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .bar-inner {
+            height: 100%;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+        .bar-value {
+            min-width: 60px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="camera-section">
+            <h2>Camera Feed</h2>
+            <video id="webcam" autoplay playsinline></video>
+            <div class="button-group">
+                <button id="startCamera">Start Camera</button>
+                <button id="stopCamera" class="stop">Stop Camera</button>
+                <button id="capture">Capture</button>
+                <label class="upload-label">
+                    Upload Image
+                    <input type="file" id="fileUpload" accept="image/*">
+                </label>
+            </div>
+            <div id="result">Recognition Result: <span id="prediction"></span></div>
+            <div class="chart-container">
+                <h3>Shape Probabilities</h3>
+                <div id="barChart" class="bar-chart"></div>
+            </div>
+        </div>
+        <div class="drawing-section">
+            <h2>Drawing Canvas</h2>
+            <canvas id="canvas"></canvas>
+            <div class="button-group">
+                <button id="clear">Clear</button>
+                <button id="recognize">Recognize Shape</button>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="code-section-header">Project Code</h2>
+    <div class="code-section">
+        <div class="project-tree">
+            <div class="file-item" onclick="showFile('index.html')">index.html</div>
+            <div class="file-item" onclick="showFile('style.css')">style.css</div>
+            <div class="file-item" onclick="showFile('script.js')">script.js</div>
+            <div class="folder">tm-my-image-model</div>
+            <div class="file-item file" onclick="showFile('model.json')">model.json</div>
+            <div class="file-item file" onclick="showFile('metadata.json')">metadata.json</div>
+            <div class="file-item file" onclick="showFile('weights.bin')">weights.bin</div>
+        </div>
+        <pre class="code-viewer" id="codeViewer">// Select a file from the project tree to view its contents</pre>
+    </div>
+
+    <script type="text/javascript">
+        // Code viewer functionality
+        async function showFile(filename) {
+            const codeViewer = document.getElementById('codeViewer');
+            const fileItems = document.querySelectorAll('.file-item');
+            
+            fileItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            let code = '';
+            let language = '';
+            
+            try {
+                const response = await fetch(`https://raw.githubusercontent.com/yan-maksi/LR-vizualization/main/${filename}`);
+                if (!response.ok) throw new Error('File not found');
+                code = await response.text();
+                
+                language = filename.split('.').pop();
+                if (language === 'js') language = 'javascript';
+                if (language === 'json' || language === 'html' || language === 'javascript') {
+                    codeViewer.innerHTML = `<code class="language-${language}">${Prism.highlight(
+                        code,
+                        Prism.languages[language],
+                        language
+                    )}</code>`;
+                } else {
+                    codeViewer.textContent = code;
+                }
+            } catch (error) {
+                codeViewer.textContent = `Error loading file: ${error.message}`;
+            }
+        }
+        let model;
+        let webcam;
+        let canvas;
+        let ctx;
+        let isDrawing = false;
+        let speechSynthesis = window.speechSynthesis;
+        let mediaStream = null;
+
+        window.addEventListener('load', async () => {
+            if (typeof tmImage === 'undefined') {
+                console.error('TeachableMachine library not loaded');
+                return;
+            }
+            await init();
+        });
+
+        async function init() {
+            try {
+                const modelURL = 'tm-my-image-model/model.json';
+                const metadataURL = 'tm-my-image-model/metadata.json';
+                
+                model = await tmImage.load(modelURL, metadataURL);
+                console.log('Model loaded successfully');
+            } catch (error) {
+                console.error('Error loading model:', error);
+                return;
+            }
+
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 300;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+
+            setupDrawing();
+            setupCamera();
+            setupFileUpload();
+        }
+
+        async function setupCamera() {
+            const startCameraButton = document.getElementById('startCamera');
+            const stopCameraButton = document.getElementById('stopCamera');
+            
+            startCameraButton.addEventListener('click', async () => {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            width: 400,
+                            height: 300 
+                        } 
+                    });
+                    const videoElement = document.getElementById('webcam');
+                    videoElement.srcObject = mediaStream;
+                    videoElement.style.transform = 'scaleX(-1)';
+                    webcam = new tmImage.Webcam(400, 300, true);
+                    await webcam.setup();
+                } catch (error) {
+                    console.error('Error setting up camera:', error);
+                }
+            });
+
+            stopCameraButton.addEventListener('click', () => {
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    const videoElement = document.getElementById('webcam');
+                    videoElement.srcObject = null;
+                    mediaStream = null;
+                }
+            });
+
+            document.getElementById('capture').addEventListener('click', async () => {
+                if (webcam) {
+                    try {
+                        const videoElement = document.getElementById('webcam');
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                        
+                        const prediction = await model.predict(canvas);
+                        displayResult(prediction);
+                        updateBarChart(prediction);
+                    } catch (error) {
+                        console.error('Error during prediction:', error);
+                    }
+                }
+            });
+        }
+
+        function setupDrawing() {
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            document.getElementById('clear').addEventListener('click', () => {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'black';
+            });
+
+            document.getElementById('recognize').addEventListener('click', async () => {
+                try {
+                    const prediction = await model.predict(canvas);
+                    displayResult(prediction);
+                    updateBarChart(prediction);
+                } catch (error) {
+                    console.error('Error during prediction:', error);
+                }
+            });
+        }
+
+        function setupFileUpload() {
+            document.getElementById('fileUpload').addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const img = new Image();
+                    img.onload = async () => {
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        try {
+                            const prediction = await model.predict(canvas);
+                            displayResult(prediction);
+                            updateBarChart(prediction);
+                        } catch (error) {
+                            console.error('Error during prediction:', error);
+                        }
+                    };
+                    img.src = URL.createObjectURL(file);
+                }
+            });
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function updateBarChart(predictions) {
+            const chartContainer = document.getElementById('barChart');
+            chartContainer.innerHTML = '';
+
+            predictions.forEach(pred => {
+                const barItem = document.createElement('div');
+                barItem.className = 'bar-item';
+
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = pred.className;
+
+                const barOuter = document.createElement('div');
+                barOuter.className = 'bar-outer';
+
+                const barInner = document.createElement('div');
+                barInner.className = 'bar-inner';
+                barInner.style.width = `${pred.probability * 100}%`;
+
+                const value = document.createElement('div');
+                value.className = 'bar-value';
+                value.textContent = `${(pred.probability * 100).toFixed(1)}%`;
+
+                barOuter.appendChild(barInner);
+                barItem.appendChild(label);
+                barItem.appendChild(barOuter);
+                barItem.appendChild(value);
+                chartContainer.appendChild(barItem);
+            });
+        }
+
+        function displayResult(prediction) {
+            const bestPrediction = prediction.reduce((prev, current) => 
+                prev.probability > current.probability ? prev : current
+            );
+
+            document.getElementById('prediction').textContent = 
+                `${bestPrediction.className} (${(bestPrediction.probability * 100).toFixed(2)}%)`;
+
+            const utterance = new SpeechSynthesisUtterance(bestPrediction.className);
+            speechSynthesis.speak(utterance);
+
+            // Draw the recognized shape
+            drawRecognizedShape(bestPrediction.className);
+        }
+
+        function drawRecognizedShape(shape) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height + 100;
+            const size = 50;
+
+            // Create new canvas for recognized shape
+            let shapeCanvas = document.querySelector('#recognizedShape');
+            if (!shapeCanvas) {
+                shapeCanvas = document.createElement('canvas');
+                shapeCanvas.id = 'recognizedShape';
+                shapeCanvas.width = canvas.width;
+                shapeCanvas.height = 150;
+                shapeCanvas.style.border = '1px solid #ddd';
+                shapeCanvas.style.borderRadius = '4px';
+                shapeCanvas.style.marginTop = '10px';
+                document.querySelector('.drawing-section').appendChild(shapeCanvas);
+            }
+
+            const shapeCtx = shapeCanvas.getContext('2d');
+            shapeCtx.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
+            shapeCtx.strokeStyle = 'black';
+            shapeCtx.lineWidth = 2;
+            shapeCtx.fillStyle = '#f0f0f0';
+
+            switch(shape.toLowerCase()) {
+                case 'circle':
+                    shapeCtx.beginPath();
+                    shapeCtx.arc(centerX, 75, size, 0, Math.PI * 2);
+                    shapeCtx.fill();
+                    shapeCtx.stroke();
+                    break;
+                case 'square':
+                    shapeCtx.beginPath();
+                    shapeCtx.rect(centerX - size, 25, size * 2, size * 2);
+                    shapeCtx.fill();
+                    shapeCtx.stroke();
+                    break;
+                case 'triangle':
+                    shapeCtx.beginPath();
+                    shapeCtx.moveTo(centerX, 25);
+                    shapeCtx.lineTo(centerX - size, 25 + size * 1.7);
+                    shapeCtx.lineTo(centerX + size, 25 + size * 1.7);
+                    shapeCtx.closePath();
+                    shapeCtx.fill();
+                    shapeCtx.stroke();
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
