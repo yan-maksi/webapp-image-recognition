@@ -1,5 +1,7 @@
 WebApp Link - https://ai-services.neocities.org/
 
+** monolithicCodeFirstVersion.html - The first version of the code before the major refactor.
+
 # AI Shape Drawing & Recognition App
 
 WebApp for Image Recognition - Draw shapes, take pictures, or upload images.
